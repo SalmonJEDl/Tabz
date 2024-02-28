@@ -74,9 +74,9 @@ class Tab():
                         if not tab.parent:
                             tab.add_member(line[3], timestamp)
                     elif line[2] == "P:":
-                        tab.add_purchase(self.find_member_id(line[3]), float(line[5]), timestamp)
+                        tab.add_purchase(self.find_member_id(line[3]), int(float(line[5])*100), timestamp)
                     elif line[2] == "T:":
-                        tab.add_transfer(self.find_member_id(line[3]), self.find_member_id(line[5]), float(line[7]), timestamp)
+                        tab.add_transfer(self.find_member_id(line[3]), self.find_member_id(line[5]), int(float(line[7])*100), timestamp)
                     elif line[2] == "B:":
                         tab.balance()
                     elif line[2] == "Z":
@@ -226,7 +226,7 @@ class Tab():
         payer = self.find_member(payer_id)
         payer.add_spending(amount)
         self.total_spending += amount
-        self.string += "{} P: {} | {}\n".format(purchase.timestamp, payer.name, str(amount))
+        self.string += "{} P: {} | {}\n".format(purchase.timestamp, payer.name, str(amount/100))
     
     
     
@@ -238,7 +238,7 @@ class Tab():
         self.transactions.append(transfer)
         payer.add_spending(amount)
         recipient.add_spending(-amount)
-        self.string += "{} T: {} -> {} | {}\n".format(transfer.timestamp, payer.name, recipient.name, str(amount))
+        self.string += "{} T: {} -> {} | {}\n".format(transfer.timestamp, payer.name, recipient.name, str(amount/100))
         #self.string += transfer.timestamp + " T: " + payer.name + " -> " + recipient.name + " | " + str(amount) + "\n"
     
     
@@ -303,13 +303,13 @@ class Tab():
 
 
     def balance(self):
-        #Sets all members' spending to 0
-        average = float("{:.2f}".format(self.total_spending / self.mem_count))
+        #Sets all members' spending to the average
+        average = self.total_spending // self.mem_count
         for member in self.members:
             member.set_spending(average)
         time = self.get_time()
         self.operations.append(Operation("B", time, amount=average))
-        self.string += "{} B: {}\n".format(time, average)
+        self.string += "{} B: {}\n".format(time, average/100)
         self.op_count += 1
             
         
@@ -325,7 +325,7 @@ class Tab():
     
     def get_required_transfers(self, include_children=True):
         #Gives the required money transfers in order to balance spending.
-        average = self.total_spending / self.mem_count
+        average = self.total_spending // self.mem_count
         above = []
         below = []
         transfers = []
@@ -355,17 +355,17 @@ class Tab():
             higher_diff = higher["spending"]-average
             lower_diff = average-lower["spending"]
             if higher_diff > lower_diff:
-                transfers.append(Transaction(lower["id"], float("{:.2f}".format(lower_diff)), recipient=higher["id"]))
+                transfers.append(Transaction(lower["id"], lower_diff, recipient=higher["id"]))
                 higher["spending"] -= lower_diff
                 lower["spending"] += lower_diff
                 l += 1
             elif above[k]["spending"]-average < average-below[l]["spending"]:
-                transfers.append(Transaction(lower["id"], float("{:.2f}".format(higher_diff)), recipient=higher["id"]))
+                transfers.append(Transaction(lower["id"], higher_diff, recipient=higher["id"]))
                 higher["spending"] -= higher_diff
                 lower["spending"] += higher_diff
                 k+=1
             else:
-                transfers.append(Transaction(lower["id"], float("{:.2f}".format(higher_diff)), recipient=higher["id"]))
+                transfers.append(Transaction(lower["id"], higher_diff, recipient=higher["id"]))
                 higher["spending"] -= higher_diff
                 lower["spending"] += higher_diff
                 k += 1
@@ -376,12 +376,13 @@ class Tab():
             for tr in transfers:
                 if ch_tr.matches(tr):
                     tr.amount += ch_tr.amount
-                    tr.amount = float("{:.2f}".format(tr.amount))
                     return True
                 elif ch_tr.is_opposite(tr):
                     tr.amount -= ch_tr.amount
                     if tr.amount == 0:
                         transfers.remove(tr)
+                    elif tr.amount < 0:
+                        tr.reverse()
                     return True
             return False
                 
@@ -411,7 +412,7 @@ class Tab():
             string += "{} {}".format(time, self.find_member(payer_id).name)
             if recipient_id >= 0:
                 string += " -> {}".format(self.find_member(recipient_id).name)
-            string  += " | {}\n".format(str(amount))
+            string  += " | {}\n".format(str(amount/100))
             
         return string
     

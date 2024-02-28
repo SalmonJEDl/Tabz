@@ -8,7 +8,7 @@ class Member():
     def __init__(self, name, member_id):
         self.name = name
         self.id = member_id
-        self.spending = 0.0
+        self.spending = 0
         
     def add_spending(self, amount):
         self.spending += amount
@@ -23,4 +23,4 @@ class Member():
         return self.id, self.name, self.spending
         
     def __str__(self):
-        return "id: {}, name: {}, spending: {}".format(self.id, self.name. self.spending)
+        return "id: {}, name: {}, spending: {}".format(self.id, self.name. self.spending/100)

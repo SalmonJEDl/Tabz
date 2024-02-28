@@ -177,7 +177,7 @@ class TabzGUI(QMainWindow):
                 return
             amount = Dialog.purchaseAmount.text()
             try:
-                famount = float(amount.replace(",","."))
+                famount = int(float(amount.replace(",","."))*100)
             except ValueError:
                 self.show_error("Invalid amount")
                 return
@@ -199,7 +199,7 @@ class TabzGUI(QMainWindow):
                 return
             amount = Dialog.transferAmount.text()
             try:
-                famount = float(amount.replace(",","."))
+                famount = int(float(amount.replace(",","."))*100)
             except ValueError:
                 self.show_error("Invalid amount")
                 return
@@ -304,7 +304,7 @@ class TabzGUI(QMainWindow):
             time, payer_id, recipient_id, amount = tr.get_info()
             payer = self.tab.find_member(payer_id)
             recipient = self.tab.find_member(recipient_id)
-            string = "{} -> {} | {}".format(payer.name, recipient.name, str(amount))
+            string = "{} -> {} | {}".format(payer.name, recipient.name, str(amount/100))
             self.reqList.insertItem(count, string)
 
     

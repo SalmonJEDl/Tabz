@@ -26,10 +26,16 @@ class Transaction():
             return True
         return False
     
+    def reverse(self):
+        rec = self.recipient
+        self.recipient = self.payer
+        self.payer = rec
+        self.amount = -self.amount
+    
     def __str__(self):
         if self.timestamp:
             return self. timestamp + " | " + str(self.payer) + "->" + str(self.recipient) + " | " + str(self.amount)
-        return str(self.payer) + "->" + str(self.recipient) + " | " + str(self.amount)
+        return str(self.payer) + "->" + str(self.recipient) + " | " + str(self.amount/100)
 
 
 class Operation():
@@ -41,7 +47,7 @@ class Operation():
         if optype == "A" or type == "R":
             self.info = name
         elif optype == "B":
-            self.info = str(amount)
+            self.info = str(amount/100)
         elif optype == "Z":
             pass
         elif optype == "E":
