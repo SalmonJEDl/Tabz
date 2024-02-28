@@ -93,44 +93,6 @@ class Tab():
             
             i+=1
             
-        '''    
-        try:
-            while i<size and textIn[i][:4] != "Name":
-                i +=1
-            
-            self.change_name(textIn[i][6:])
-                
-        except(IndexError):
-            i=0
-            
-        while i<size and textIn[i] != "Actions:":
-            i+=1
-        i+=1
-        while i < size:
-            line = textIn[i].split()
-            if len(line)>3:
-                timestamp = "{} {}".format(line[0], line[1])
-                if line[2] == "A:":
-                    self.add_member(line[3], timestamp)
-                elif line[2] == "P:":
-                    self.add_purchase(self.find_member_id(line[3]), float(line[5]), timestamp)
-                elif line[2] == "T:":
-                    self.add_transfer(self.find_member_id(line[3]), self.find_member_id(line[5]), float(line[7]), timestamp)
-                elif line[2] == "B:":
-                    self.balance()
-                elif line[2] == "Z":
-                    self.zero_out()
-                elif line[2] == "R:":
-                    self.remove_member(self.find_member_id(line[3]))
-                elif line[2] == "E":
-                    names = line[5].split(",")
-                    m_ids = [self.find_member_id(name) for name in names]
-                    self.exclude_members(m_ids, line[3])
-            else:
-                break
-            i+=1
-            '''
-            
             
             
     def parse_text(self, text):

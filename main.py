@@ -210,7 +210,7 @@ class TabzGUI(QMainWindow):
                 if payment.amount == 0:
                     self.refresh_info()
                     return
-            self.tab.add_transfer(payment.payer, payment.receiver, payment.amount)
+            self.tab.add_transfer(payment.payer, payment.recipient, payment.amount)
             self.refresh_info()
             
     
